@@ -7,6 +7,8 @@ description = "A simple micro–app UI for oLlama using Rust with tools support 
 keywords = ["ui","web","ai","ollama"]
 categories = ["web-programming::http-server","web-programming::http-client","web-programming"]
 readme = "README.md"
+repository = "https://github.com/bachuetech/bt_ai_ui.git"
+homepage = "https://github.com/bachuetech/bt_ai_ui"
 license = "GPL-3.0-only"
 
 
