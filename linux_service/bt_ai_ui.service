@@ -1,0 +1,14 @@
+[Unit]
+Description=Bachuetech AI UI
+After=network.target
+
+[Service]
+ExecStart=/usr/local/bin/bt_ai_ui
+WorkingDirectory=/usr/local/share/bt_ai_ui
+Restart=always
+User=bt.ai_ui.service
+Group=bt.ai.service
+
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BT AI UI Chat</title>
+    <link rel="shortcut icon" type="image/x-icon" href="favicon.png">
+
+    <script src="scripts/speech/txt2speech.js"></script>
+    <script src="scripts/speech/speech2txt.js"></script>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/15.0.2/marked.min.js" integrity="sha512-vPkiMkaP5f2AJPT3P+YO9vIdK4NaasmmiCJGIg+aLJEHOU6W6uyEZasR9i0UWk63MyU13C4bfbNB9epomXKUAQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.2.1/purify.min.js" integrity="sha512-PBUtfPzExa/FxBEi6tr884CPkb9Wh0kjchdWPECubdH16+G0JjkGQHgWCO7zgINZlXtmVnpII7KnZctAPUAZWg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+
+    <link rel="stylesheet" href="styles/sunburst.css" crossorigin="anonymous">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/prettify.min.js" integrity="sha512-/9uQgrROuVyGVQMh4f61rF2MTLjDVN+tFGn20kq66J+kTZu/q83X8oJ6i4I9MCl3psbB5ByQfIwtZcHDHc2ngQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+    <!-- The loading of KaTeX is deferred to speed up page rendering -->
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+    <!-- To automatically render math in text elements, include the auto-render extension: -->
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous"
+        onload="renderMathInElement(document.body);"></script>
+
+    <link rel="stylesheet" href="styles/ai_ui.css">
+
+
+</head>
+<body data-bs-theme="dark" onload="PR.prettyPrint()">
+    <div class="container-fluid">
+        <div class="row">
+          <!-- Sidebar -->
+          <nav class="col-md-3 col-lg-2 sidebar">
+            <h2 id="app_name">Chat</h2>
+            <ul class="nav flex-column">
+              <li class="nav-item">
+                <label for="model-select" class="me-2" style="font-size: normal;">Model:</label>
+                <select class="form-select me-5" id="model-select" style="width: auto;"></select>
+              </li>
+              <li class="nav-item">
+                <label for="chat-select" class="me-2" style="font-size: normal;">History:</label>
+                <select id="chat-select" class="form-select me-2" style="width: auto;">
+                  <option value="" disabled selected>Select a chat</option>
+                </select>
+              </li>
+              <li class="nav-item">
+                <br/>
+                <button id="new-chat" class="btn btn-dark mb-2" type="button">Reset</button>
+                <button id="delete-chat" class="btn btn-danger mb-2" type="button">Delete</button>
+              </li>
+            </ul>
+          </nav>
+    
+        <!-- Content Area -->
+        <main class="col-md-9 col-lg-10 content">
+            <div style="top: 0px; background: linear-gradient(180deg, black, transparent);">
+                <div class="container">
+                    <div id="scroll-wrapper">
+                        <div id="chat-container" class="card">
+                            <div class="card-body">
+                                <div id="chat-history"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="container p-2 card" id="input-area">
+                <div class="input-group">
+                    <textarea class="form-control" id="user-input" placeholder="Type your question here...(Ctrl + Enter to submit)"
+                        oninput="autoGrow(this)"></textarea>
+                    <button id="send-button" class="btn btn-primary">Send</button>
+                    <button id="mic-button" class="btn btn-primary mic-button">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-mic-mute" viewBox="0 0 16 16">
+                        <path d="M13 8c0 .564-.094 1.107-.266 1.613l-.814-.814A4 4 0 0 0 12 8V7a.5.5 0 0 1 1 0zm-5 4c.818 0 1.578-.245 2.212-.667l.718.719a5 5 0 0 1-2.43.923V15h3a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1h3v-2.025A5 5 0 0 1 3 8V7a.5.5 0 0 1 1 0v1a4 4 0 0 0 4 4m3-9v4.879l-1-1V3a2 2 0 0 0-3.997-.118l-.845-.845A3.001 3.001 0 0 1 11 3"/>
+                        <path d="m9.486 10.607-.748-.748A2 2 0 0 1 6 8v-.878l-1-1V8a3 3 0 0 0 4.486 2.607m-7.84-9.253 12 12 .708-.708-12-12z"/>
+                      </svg>
+                    </button>
+                </div>
+            </div>
+        </main>
+
+
+
+        </div>
+      </div>
+
+  <!-- Floating Message Area -->
+  <div class="modal fade" id="notiModal" tabindex="-1" aria-labelledby="notificationModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="notificationModalLabel">Notification</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <p id="subTitle" class="fw-bold"></p>
+          <p id="notiText"></p>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="scripts/config.js"></script>
+  <script src="scripts/utils.js"></script>
+  <script src="scripts/ai_ui/api.js"></script>
+  <script src="scripts/ai_ui/helper.js"></script>
+  <script src="scripts/ai_ui/ui.js"></script> 
+
+</body>
+</html>

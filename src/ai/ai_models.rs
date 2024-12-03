@@ -1,0 +1,80 @@
+use std::collections::HashMap;
+
+use serde::{Deserialize, Serialize};
+
+use crate::{config::ai_config::{AIConfig, InteractionType}, utils::http_utils::{HttpClient, HttpResponse}};
+
+
+#[derive(Deserialize, Serialize)]
+struct ModelList {
+    models: Vec<OllamaModel>,
+}
+
+#[derive(Deserialize, Serialize)]
+pub struct OllamaModel{
+    pub name: String,
+    model: String,
+    modified_at: String,
+    size: i64,
+    digest: String,
+    details: OllamaModelDetails,
+}
+
+#[derive(Deserialize, Serialize)]
+struct OllamaModelDetails{
+    parent_model: String,
+    format: String,
+    family: String,
+    families: Vec<String>,
+    parameter_size: String,
+    quantization_level: String,
+}
+
+    /// Call the different platforms available to retrieve the available models.
+    /// Returns a list of modesl as Json inside a HttpResponse object.
+    pub async fn get_available_models_http(ai_config: &AIConfig, http_client: &HttpClient) -> HttpResponse {
+        let mut json_answer = "".to_owned();
+        let mut req_status: u16 = 0;
+        let mut headers: HashMap<String, String> = HashMap::new();
+
+        for plfm in ai_config.get_platform_list() {
+                let resp = http_client
+                    .get(ai_config.get_url(plfm.to_string(), InteractionType::Models).as_str())
+                    .await;
+
+                if ! resp.is_error() {
+                    req_status = resp.status_code;
+                    headers = resp.header;
+                    let models: ModelList =
+                        serde_json::from_str(&resp.body).expect("Error getting models. JSON was not well-formatted");
+                    //ToDo: Concatenate correctly Answers, rigth now just really work with one platform. Working only with OLLAMA
+                    let mut adjusted_models: Vec<OllamaModel> = Vec::new();
+                    for mut m in models.models {
+                        //format!("{}:{}",&pn,&m.model);
+                        m.name = format!("{}:{}", &plfm, m.name);
+                        adjusted_models.push(m);
+                    }
+
+                    json_answer = format!(
+                        "{}{}",
+                        json_answer,
+                        serde_json::to_string(&ModelList {
+                            models: adjusted_models
+                        })
+                        .expect("Error: AIClient::get_available_models_http. Cannot convert Models to Json")
+                    );
+                }else{
+                    if req_status == 0{
+                        req_status = resp.status_code;
+                        headers = resp.header;
+                    }
+                }
+        }
+
+        HttpResponse{
+            status_code: req_status,
+            header: headers,
+            body: json_answer.to_owned(),
+        }
+
+    }

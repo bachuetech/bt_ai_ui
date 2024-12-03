@@ -1,0 +1,24 @@
+# ai_config.yml
+name: Jeremy
+dev:
+  platform:
+    - name: OLLAMA
+      server:
+        host: 192.168.117.161
+        port: 11434
+        secure: false
+      api:
+        ctx_max: 20
+        path: api
+        chat: chat
+        generate: generate
+        models: tags
+      models:
+        - model: ollama3.2
+          tool_support: true
+          system: You are an AI assitant
+          tools: ALL          
+        - model: default
+          tool_support: false
+          system: You are an AI assitant
+          tools: NONE

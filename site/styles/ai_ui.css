@@ -1,0 +1,119 @@
+body {
+    color: #ffffff;
+    font-family: 'Arial', sans-serif;
+  }
+  
+  /* Custom styles for the layout */
+  .sidebar {
+    background-color: #494b4dd3;
+    /* Light gray background for sidebar */
+    padding: 20px;
+    position: sticky;
+    top: 0;
+    height: 100vh; /* Adjust height as needed */
+  }
+  
+  .content {
+    background-color: rgb(97, 97, 97);
+    /* White background for content area */
+    padding: 5px;
+    min-height: 100vh;
+    /* Full viewport height */
+  }
+  
+  .user-message {
+    background-color: rgb(86, 144, 163);
+    color: white;
+    padding: 10px;
+    border-radius: 10px;
+    white-space: pre-wrap;
+    margin-left: auto;
+    margin-right: 0;
+    max-width: 90%;
+  }
+  
+  /* Style for received messages */
+  .response-message {
+    background-color: rgb(62, 62, 62);
+    color: white;
+    padding: 10px;
+    border-radius: 10px;
+    padding-right: 20px;
+    position: relative;
+    margin-right: auto;
+    max-width: 90%;
+  }
+  
+  .response-message p {
+    margin-right: 40px;
+  }
+  
+  #scroll-wrapper {
+    padding-top: 1rem;
+    padding-bottom: 5.5rem;
+  }
+  
+  /* Style for the chat container */
+  #chat-container {
+    display: none;
+    margin: 0 auto;
+    overflow: auto;
+  }
+  
+  #chat-history {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .host-address-select {
+    background-color: red;
+    color: white;
+    padding: 1000px;
+    border-radius: 1000px;
+  }
+  
+  
+  
+  .copy-button {
+    position: relative;
+    float: right;
+    bottom: 5px;
+    right: 5px;
+    margin: 0 5px 5px 0;
+  }
+  
+  .speak-button {
+    position: relative;
+    float: left;
+    bottom: 5px;
+    left: 5px;
+    margin: 0 5px 5px 0;
+  }
+  
+  #mic-button{
+    border: 1px solid #2781f7;
+    transition: transform 0.2s ease-in-out;
+  }
+  
+  #mic-button-on{
+    transform: translateY(-3px);
+  }
+  
+  #input-area {
+    position: fixed;
+    bottom: 0;
+  
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  
+  #user-input {
+    overflow-y: auto;
+  }
+  
+  @media (max-width: 600px) {
+    .d-flex h1 {
+      display: none;
+    }
+  
+  }
