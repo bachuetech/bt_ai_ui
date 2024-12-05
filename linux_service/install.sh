@@ -1,6 +1,6 @@
 # Specify the service name and file path
 SERVICE_NAME="bt_ai_ui"
-SERVICE_FILE="bt_ai_ui.service"
+SERVICE_FILE="./bt_ai_ui.service"
 SOURCE_FILE="./ai_ui"
 DESTINATION_PGM_FILE="/usr/local/bin/bt_ai_ui"
 DESTINATION_FOLDER="/usr/local/share/bt_ai_ui"

@@ -171,7 +171,6 @@ document.getElementById('user-input').addEventListener('keydown', function (e) {
     if (chatName === null || chatName.trim() === "") return;
     const history = document.getElementById("chat-history").innerHTML;
     const context = document.getElementById('chat-history').context; //ToDo: Replace with LocalStorage??? or Last Context Attached to Last model.
-    //const systemPrompt = document.getElementById('system-prompt').value;
     const model = getSelectedModel();
   
     const eChatName = chat_storage+'.'+chatName;
@@ -186,7 +185,6 @@ document.getElementById('user-input').addEventListener('keydown', function (e) {
   
     document.getElementById("chat-history").innerHTML = obj.history;
     document.getElementById("chat-history").context = obj.context;
-    document.getElementById("system-prompt").value = obj.system;
     document.getElementById("chat-container").style.display = 'block';
   }
   

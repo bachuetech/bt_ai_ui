@@ -96,14 +96,14 @@ async function submitRequest() {
             ],
             throwOnError: false
           });
-          responseDiv.innerHTML = DOMPurify.sanitize(prettifyCode(cleanHTMLEntities(markdownToHTMLCleansing(marked.parse(responseDiv.innerHTML)))));
+          //responseDiv.innerHTML = DOMPurify.sanitize(prettifyCode(cleanHTMLEntities(markdownToHTMLCleansing(marked.parse(responseDiv.innerHTML)))));
+          responseDiv.innerHTML = prettifyCode(marked.parse(responseDiv.innerHTML));
         }
       })
-      //})
       .then(() => {
         stopButton.remove();
         PR.prettyPrint();
-        responseDiv.innerHTML = DOMPurify.sanitize("<strong>" + selectedModel + ":</strong><br/>" + responseDiv.innerHTML); //ToDo: Add DOMPurify.sanitize( Control for prettyPrint porbably?
+        responseDiv.innerHTML = DOMPurify.sanitize("<strong>" + selectedModel + ":</strong><br/>" + responseDiv.innerHTML);
   
         // Copy button
         let copyButton = document.createElement("button");
@@ -120,15 +120,12 @@ async function submitRequest() {
         speakButton.innerHTML = megaphoneIcon;
         speakButton.onclick = function () {
           t2s.readAloud(responseDiv.textContent);
-          //copyToClipboard(responseDiv.textContent);
         };
-        //responseDiv.appendChild(speakButton);
         responseDiv.appendChild(speakButton);
   
         spinner.remove();
         spinner_nav.remove();
         saveChat();
-        //scrollToElement(responseDiv);
       })
       .catch(error => {
         if (error !== 'Stop button pressed') {
