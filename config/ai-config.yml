@@ -1,5 +1,5 @@
 # ai_config.yml
-name: Jeremy
+name: BachutechAI
 dev:
   platform:
     - name: OLLAMA

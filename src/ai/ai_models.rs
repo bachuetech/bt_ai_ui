@@ -33,9 +33,9 @@ struct OllamaModelDetails{
     /// Call the different platforms available to retrieve the available models.
     /// Returns a list of modesl as Json inside a HttpResponse object.
     pub async fn get_available_models_http(ai_config: &AIConfig, http_client: &HttpClient) -> HttpResponse {
-        let mut json_answer = "".to_owned();
         let mut req_status: u16 = 0;
         let mut headers: HashMap<String, String> = HashMap::new();
+        let mut adjusted_models: Vec<OllamaModel> = Vec::new();
 
         for plfm in ai_config.get_platform_list() {
                 let resp = http_client
@@ -47,22 +47,13 @@ struct OllamaModelDetails{
                     headers = resp.header;
                     let models: ModelList =
                         serde_json::from_str(&resp.body).expect("Error getting models. JSON was not well-formatted");
-                    //ToDo: Concatenate correctly Answers, rigth now just really work with one platform. Working only with OLLAMA
-                    let mut adjusted_models: Vec<OllamaModel> = Vec::new();
                     for mut m in models.models {
                         //format!("{}:{}",&pn,&m.model);
                         m.name = format!("{}:{}", &plfm, m.name);
                         adjusted_models.push(m);
                     }
 
-                    json_answer = format!(
-                        "{}{}",
-                        json_answer,
-                        serde_json::to_string(&ModelList {
-                            models: adjusted_models
-                        })
-                        .expect("Error: AIClient::get_available_models_http. Cannot convert Models to Json")
-                    );
+
                 }else{
                     if req_status == 0{
                         req_status = resp.status_code;
@@ -70,6 +61,11 @@ struct OllamaModelDetails{
                     }
                 }
         }
+
+        let json_answer = serde_json::to_string(&ModelList {
+            models: adjusted_models
+        })
+        .expect("Error: AIClient::get_available_models_http. Cannot convert Models to Json");
 
         HttpResponse{
             status_code: req_status,
