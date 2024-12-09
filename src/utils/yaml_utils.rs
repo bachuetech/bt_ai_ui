@@ -18,3 +18,20 @@
         let yml_config = YamlLoader::load_from_str(&config_yml_content).unwrap();
         yml_config[0].clone()
     }
+
+    pub fn convert_yaml_to_vec_string(yaml: &Yaml) -> Vec<String> {
+        // Ensure the YAML is a sequence (list)
+        if let Yaml::Array(array) = yaml {
+            // Convert each item in the array to a String
+            array.iter().filter_map(|item| {
+                // Ensure the item is a string and then convert it
+                if let Yaml::String(s) = item {
+                    Some(s.clone())  // clone the string into the Vec
+                } else {
+                    None
+                }
+            }).collect()
+        } else {
+            Vec::new()  // Return an empty Vec if not a sequence
+        }
+    }

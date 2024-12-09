@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
 use bt_logger::log_warning;
+use yaml_rust2::Yaml;
 
 use crate::utils::yaml_utils;
 use crate::config::labels;
@@ -75,6 +76,16 @@ impl From<String> for SupportedFunctions {
     }
 }
 
+impl From<Yaml> for SupportedFunctions {
+    fn from(s: Yaml) -> Self {
+        match s.as_str() {
+            Some("ALL") => SupportedFunctions::ALL,
+            Some("NONE") => SupportedFunctions::NONE,
+            _ => SupportedFunctions::Functions(yaml_utils::convert_yaml_to_vec_string(&s)), // Otherwise, treat it as a list of names
+        }
+    }
+}
+
 #[derive(Debug)]
 pub struct Model{
     pub tool_support: bool,
@@ -140,14 +151,12 @@ impl AIConfig {
                     Model{
                         tool_support: m["tool_support"].as_bool().unwrap_or(false),
                         system: m["system"].as_str().unwrap_or("You are an AI assistance").to_owned(),
-                        tools: SupportedFunctions::from(m["tools"].as_str().unwrap_or("NONE").to_owned()),
+                        tools: SupportedFunctions::from(m["tools"].clone()),
                     },
                 );
             }
 
             let p = Platform {
-                //name: plat["name"].as_str().unwrap_or("default").to_owned(),
-                //server: host_data,
                 api: api_data,
                 ai_url: url,
                 models: config_models,

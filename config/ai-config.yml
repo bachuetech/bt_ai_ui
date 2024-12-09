@@ -17,7 +17,17 @@ dev:
         - model: llama3.2
           tool_support: true
           system: You are an AI assitant. You have tool-calling capabilities. When you receive a tool call response, use the output to format an answer to the original user request. Always prioritize the tool's answer over yours
-          tools: ALL          
+          tools:
+            - do_basic_math
+            - do_math_expressions
+        - model: llama3.1
+          tool_support: true
+          system: You are an AI assitant. You have tool-calling capabilities. When you receive a tool call response, use the output to format an answer to the original user request. Always prioritize the tool's answer over yours
+          tools: ALL
+        - model: qwen2-math
+          tool_support: true
+          system: You are an AI assitant.
+          tools: NONE                                 
         - model: default
           tool_support: false
           system: You are an AI assitant

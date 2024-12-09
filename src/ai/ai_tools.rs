@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 use bt_logger::{log_debug, log_trace, log_verbose};
 use serde::{Deserialize, Serialize};
@@ -73,14 +73,13 @@ impl AIToolManager {
     }
 
     pub fn get_common_tools(&self, functions: SupportedFunctions) ->Option<Vec<Tool>>{
-        if functions == SupportedFunctions::NONE {
-            None
-        }else{
-            //ToDo: if <> than ALL, seach for the specfic functions and return the intersection only!!!
-            //Rigth now assuming ALL even if just a subset of functions is available. This is a problem
-            Some(self.tools.clone().unwrap().tools)
-        }
+        match functions{
+            SupportedFunctions::NONE => None,
+            SupportedFunctions::ALL =>  Some(self.tools.clone().unwrap().tools),
+            SupportedFunctions::Functions(func) => {  let set2: HashSet<String> = func.into_iter().collect();
 
+                Some(self.tools.clone().unwrap().tools.into_iter().filter(|item| set2.contains(&item.function.name)).collect()) } ,
+        }
     }
 }
 
