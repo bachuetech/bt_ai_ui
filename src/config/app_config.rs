@@ -62,10 +62,6 @@ impl AppConfig {
             name: app_name.to_owned(),
             version: app_ver.to_owned(),
             environment: app_environment.to_owned(),
-            /*enc_key: app_config[app_environment]["enc_key"]
-                .as_str()
-                .unwrap()
-                .to_string(),*/
             files_app_dir: app_config[app_environment]["files_app_dir"]
                 .as_str()
                 .unwrap()
@@ -104,10 +100,6 @@ impl AppConfig {
             .unwrap_or(&"/".to_string())
             .to_string()
     }
-
-    /*pub fn get_enc_key(&self) -> String {
-        self.enc_key.clone()
-    }*/
 
     pub fn get_app_name(&self) -> &String {
         &self.name

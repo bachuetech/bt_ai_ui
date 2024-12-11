@@ -28,7 +28,7 @@ impl AIServer {
         let app_config = config; 
         log_info!(
             "new",
-            "Welcome to {} v{}",
+            "Welcome to {} {}",
             app_config.get_app_name(),
             app_config.get_version()
         );

@@ -9,7 +9,7 @@ use crate::config::labels;
 const AI_YML_CONFIG: &str = "config/ai-config.yml";
 const AI_YML_CONFIG_ENV_VAR_NAME: &str = "AICONFIGYMLFILE";
 
-const DEFAULT_NAME: &str = "JeremyBT";
+const DEFAULT_NAME: &str = "BachuetechAI";
 const DEFAULT_PORT: i64 = 11434;
 
 #[derive(Debug)]

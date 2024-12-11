@@ -52,7 +52,9 @@ else
 fi
 
 #Moving Config and Site folder
+echo "Moving site to $DESTINATION_FOLDER"
 sudo cp -fr site "$DESTINATION_FOLDER"
+echo "Moving site to $DESTINATION_FOLDER"
 sudo cp -fr config "$DESTINATION_FOLDER"
 
 sudo chown -R "root:$GROUP_NAME" "$DESTINATION_FOLDER"
