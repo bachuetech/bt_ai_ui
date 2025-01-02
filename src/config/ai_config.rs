@@ -19,9 +19,7 @@ struct _AIServer {
     secure: bool,
 }
 
-
 #[derive(Debug)]
-
 struct _AIApis {
     ctx_max: usize,
     path: String,

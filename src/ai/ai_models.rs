@@ -48,7 +48,6 @@ struct OllamaModelDetails{
                     let models: ModelList =
                         serde_json::from_str(&resp.body).expect("Error getting models. JSON was not well-formatted");
                     for mut m in models.models {
-                        //format!("{}:{}",&pn,&m.model);
                         m.name = format!("{}:{}", &plfm, m.name);
                         adjusted_models.push(m);
                     }
