@@ -12,6 +12,7 @@ use crate::{ai::ai_client::AICLient, config::app_config::AppConfig};
 use super::{web_chat::chat_handler, web_models::models_handler};
 
 
+
 //const APP_PATH: &str = "/app";
 
 pub struct AIServer {
@@ -26,14 +27,9 @@ pub struct AppState {
 impl AIServer {
     pub fn new(config: AppConfig) -> Self {
         let app_config = config; 
-        log_info!(
-            "new",
-            "Welcome to {} {}",
-            app_config.get_app_name(),
-            app_config.get_version()
-        );
-        let aic = AICLient::new(app_config.get_environment());
+        log_info!("new","Welcome to {} {}",app_config.get_app_name(),app_config.get_version());
 
+        let aic = AICLient::new(app_config.get_environment());
         let shared_state = Arc::new(AppState { ai_client: aic });
 
         Self {
@@ -51,7 +47,8 @@ impl AIServer {
        Router::new()
         .route("/", get(handler)) //This is the default path and eventually fallback
         .nest(&self.app_configuration.get_api_path(), self.get_api_routes())
-        .nest_service(&self.app_configuration.get_app_path(), self.get_app_web_route())
+        //.nest_service(&self.app_configuration.get_app_path(), self.get_app_web_route())
+        .nest_service(&self.app_configuration.get_app_path(), ServeDir::new(&self.app_configuration.get_file_app_dir()))
         //.route("/health", get(health_check_handler)); // Non-prefixed route
         .fallback(fallback)    // Catch-all for 404 errors
     }
@@ -70,13 +67,6 @@ impl AIServer {
             ) //chat
             .with_state(self.state.clone())
     }
-
-    fn get_app_web_route(&self) -> Router{
-        log_trace!("get_app_web_route","Getting Router with Web App Dir {}",&self.app_configuration.get_file_app_dir());
-        Router::new()
-                    .nest_service("/", ServeDir::new(&self.app_configuration.get_file_app_dir()))
-                                                        //.fallback(ServeFile::new(&format!("{}/{}",self.app_configuration.get_file_app_dir(),"index.html"))))
-    }    
 }
 
 fn generate_html() -> String {

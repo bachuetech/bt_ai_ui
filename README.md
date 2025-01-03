@@ -31,8 +31,10 @@ The program runs as a Linux service but can be run manually.
 ollama and ollama models
 
 ## Version History
--   0.1.0
-    -   Initial Release
+*   0.1.0
+    *   Initial Release
+*   0.1.1
+    *   Decouple the AI server from the main. Update dependencies and adjust code.
 
 ## License
 GPL-3.0-only
