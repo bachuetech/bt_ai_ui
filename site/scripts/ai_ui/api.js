@@ -104,7 +104,7 @@ async function submitRequest() {
         stopButton.remove();
         PR.prettyPrint();
         responseDiv.innerHTML = DOMPurify.sanitize("<strong>" + selectedModel + ":</strong><br/>" + responseDiv.innerHTML);
-  
+
         // Copy button
         let copyButton = document.createElement("button");
         copyButton.className = "btn btn-secondary copy-button";

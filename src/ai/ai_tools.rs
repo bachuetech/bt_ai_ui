@@ -2,7 +2,7 @@ use std::collections::{HashMap, HashSet};
 
 use bt_logger::{log_debug, log_trace, log_verbose};
 use serde::{Deserialize, Serialize};
-use serde_json::Result;
+use serde_json::{Result, Value};
 
 use crate::{config::ai_config::SupportedFunctions, utils::json_utils};
 
@@ -92,7 +92,7 @@ pub struct ToolToCall{
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct FunctionToCall{
     name: String,
-    arguments: HashMap<String,String>,
+    arguments: HashMap<String,Value>,
 }
 
 impl ToolToCall{
@@ -100,7 +100,16 @@ impl ToolToCall{
         &self.function.name
     }
 
-    pub fn get_arguments(&self) -> &HashMap<String,String>{
-        &self.function.arguments
+    pub fn get_arguments(&self) -> HashMap<String,String>{
+        //&self.function.arguments
+        //ToDo: Need a more elegant solution.
+        let mut output:HashMap<String,String> = HashMap::new();
+
+        for (key, value) in &self.function.arguments {
+            // Convert each `Value` to a `String` using `to_string()`
+            output.insert(key.to_owned(), value.to_string());
+        }
+    
+        output
     }
 }

@@ -106,6 +106,7 @@ pub async fn model_chat(
         };
     }
 
+    log_debug!("model_chat","Raw answer {:?}", resp);
     let res: AIChatResponse = serde_json::from_str(&resp.body).unwrap();
     log_verbose!("model_chat", "AI Answer Struct (Open HTTP Response to check for tool requests): {:?}", &res );
 
@@ -118,7 +119,7 @@ pub async fn model_chat(
             log_verbose!("model_chat", "Ready to call tools! List of Tools available");
             for t in tools {
                 log_verbose!("model_chat", "Calling tool {:?}", t);
-                let func_result = tool_proxy(t.get_function_name(), t.get_arguments());
+                let func_result = tool_proxy(t.get_function_name(), &t.get_arguments());
                 let func_msg = match func_result {
                     Ok(value) => value,
                     Err(e) => e,
