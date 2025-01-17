@@ -57,7 +57,7 @@
       "type": "function",
       "function": {
         "name": "do_math_expressions",
-        "description": "Resolve math expressions",
+        "description": "Resolve mathemathical expressions",
         "parameters": {
           "type": "object",
           "properties": {

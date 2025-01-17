@@ -16,13 +16,13 @@ dev:
       models:
         - model: llama3.2
           tool_support: true
-          system: You are an AI assitant. You have tool-calling capabilities. Use a tool only if the questions match the tool function. When you receive a tool call response, use the output to format an answer to the original user request. Always prioritize the tool's answer over yours
+          system: You are an AI assistant. You have tool-calling capabilities. Use a tool only if the questions match the tool function; otherwise, do not invoke any tool. When you receive a tool response, use the output to format an answer to the original user request. Always prioritize the tool's answer over yours only if any answer is received.
           tools:
             - do_basic_math
             - do_math_expressions
         - model: llama3.1
           tool_support: true
-          system: You are an AI assitant. You have tool-calling capabilities. When you receive a tool call response, use the output to format an answer to the original user request. Always prioritize the tool's answer over yours
+          system: You are an AI assitant. When you receive a tool response, use the output to format an answer to the original user request. Always prioritize the tool's answer over yours
           tools: ALL
         - model: qwen2-math
           tool_support: true
