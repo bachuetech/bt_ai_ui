@@ -86,6 +86,7 @@ impl From<Yaml> for SupportedFunctions {
 
 #[derive(Debug)]
 pub struct Model{
+    pub model: String,
     pub tool_support: bool,
     pub system: String,
     pub tools: SupportedFunctions,
@@ -145,8 +146,9 @@ impl AIConfig {
             let mut config_models: HashMap<String, Model> = HashMap::new();
             for m in plat["models"].clone() {
                 config_models.insert(
-                    m["model"].as_str().unwrap_or("default").to_owned(),
+                    m["model_id"].as_str().unwrap_or("default").to_owned(),
                     Model{
+                        model: m["model"].as_str().unwrap_or(m["model_id"].as_str().unwrap_or("default")).to_owned(),
                         tool_support: m["tool_support"].as_bool().unwrap_or(false),
                         system: m["system"].as_str().unwrap_or("You are an AI assistance").to_owned(),
                         tools: SupportedFunctions::from(m["tools"].clone()),

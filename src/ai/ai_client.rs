@@ -24,13 +24,14 @@ impl AICLient {
                                                 current_date: &String, current_time: &String) -> HttpResponse{
                                                     
         let (platform, model_version) = get_first_of_split(ai_model.as_str(),":");
-        let model = get_first_ocurrance(&model_version, ":");
+        let model_id = get_first_ocurrance(&model_version, ":");
+        let model = self.get_model(&platform, &model_id);
 
-        log_verbose!("chat_compleation", "Platform {} and Model {}",&platform, &model);
+        log_verbose!("chat_compleation", "Platform {} and Model {:?}",&platform, &model);
 
         let http_resp = 
        model_chat(&model, MessageRole::USER, chat_message, chat_context,
-            self.get_system_msg(&platform, &model), self.get_tools(&platform, &model), current_date, current_time, 
+            self.get_system_msg(&platform, &model_id), self.get_tools(&platform, &model_id), current_date, current_time, 
             self.get_max_ctx_size(&platform), &self.http_client, 
             self.get_url(&platform, config::ai_config::InteractionType::Chat)).await;
 
@@ -39,20 +40,30 @@ impl AICLient {
                 status_code: http_resp.status_code,
                 body: http_resp.body,
             }
-
     }
 
     pub async fn get_models(&self) -> HttpResponse{
         get_available_models_http(&self.ai_config, &self.http_client).await
     }
 
-
-    pub fn get_system_msg(&self, platform_name: &String, model: &String) -> Option<String> {
+    pub fn get_model(&self, platform_name: &String, model_id: &String) -> String {
         if let Some(p) = self.ai_config.get_models((&platform_name).to_string()) {
-            if let Some(sys) = p.get(model) {
+            if let Some(model) = p.get(model_id) {
+                model.model.clone()
+            } else {
+                model_id.clone()
+            }
+        } else {
+            model_id.clone()
+        }        
+    }
+
+    pub fn get_system_msg(&self, platform_name: &String, model_id: &String) -> Option<String> {
+        if let Some(p) = self.ai_config.get_models((&platform_name).to_string()) {
+            if let Some(sys) = p.get(model_id) {
                 Some(format!("{}. {}", format!("Your Are {}", self.ai_config.get_name()), sys.system))
             } else {
-                if model.to_lowercase() == "default" {
+                if model_id.to_lowercase() == "default" {
                     None
                 } else {
                     self.get_system_msg(platform_name, &"default".to_owned())
@@ -63,16 +74,16 @@ impl AICLient {
         }
     }
 
-    pub fn get_tools(&self, platform_name: &String, model: &String) -> Option<Vec<Tool>> {
+    pub fn get_tools(&self, platform_name: &String, model_id: &String) -> Option<Vec<Tool>> {
         if let Some(p) = self.ai_config.get_models((&platform_name).to_string()) {
-            if let Some(tool_model) = p.get(model) {
+            if let Some(tool_model) = p.get(model_id) {
                 if tool_model.tool_support{
                     self.tool_mgr.get_common_tools(tool_model.tools.clone())
                 }else{
                     None
                 }
             } else {
-                if model.to_lowercase() == "default" {
+                if model_id.to_lowercase() == "default" {
                     None
                 } else {
                     self.get_tools(platform_name, &"default".to_owned())

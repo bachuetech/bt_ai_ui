@@ -63,7 +63,7 @@
           "properties": {
             "expression": {
               "type": "String",
-              "description": "Mathematical expression that can be evaluated to obtain a result using numbers (integers, real, decimal, floats) and operators such as '+', '-', '*', '/', '^', '(', ')', and functions such as 'sin', 'cos' "
+              "description": "Mathematical expression that can be evaluated to obtain a result using numbers (integers, real, decimal, floats), operators such as '+', '-', '*', '/', '^', '(', ')', functions such as 'sqrt','sin','cos','tan' and constants such as PI and E"
             }
           },
           "required": [

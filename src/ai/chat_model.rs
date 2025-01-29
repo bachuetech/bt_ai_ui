@@ -42,25 +42,9 @@ struct AIChatBodyMessage {
     done: bool,
 }
 
-pub async fn model_chat(
-    ai_model: &String,
-    role: MessageRole,
-    message: &String,
-    context: Vec<Message>,
-    system: Option<String>,
-    tool_list: Option<Vec<Tool>>,
-    current_date: &str,
-    current_time: &str,
-    context_size: usize,
-    http_client: &HttpClient,
-    chat_url: String,
-) -> HttpResponse {
-    log_trace!(
-        "model_chat",
-        "Ready to start chat role {:?}: {}",
-        &role,
-        &message
-    );
+pub async fn model_chat( ai_model: &String, role: MessageRole, message: &String, context: Vec<Message>, system: Option<String>, tool_list: Option<Vec<Tool>>, 
+                        current_date: &str, current_time: &str, context_size: usize, http_client: &HttpClient, chat_url: String ) -> HttpResponse {
+    log_trace!( "model_chat", "Ready to start chat role {:?}: {}", &role, &message );
 
     let mut initial_msg: Vec<Message> = Vec::new();
     if let Some(sys_msg) = system {
@@ -92,13 +76,7 @@ pub async fn model_chat(
         .await;
 
     if resp.is_error() {
-        log_error!(
-            "model_chat",
-            "HTTP Error {} when reaching url {} for Prompt {}",
-            resp.status_code,
-            &chat_url,
-            &message
-        );
+        log_error!( "model_chat", "HTTP Error {} when reaching url {} for Prompt {}", resp.status_code, &chat_url, &message );
         return HttpResponse {
             status_code: resp.status_code,
             header: resp.header,
@@ -193,4 +171,3 @@ pub async fn model_chat(
         body: resp_body_json,
     }
 }
-//}

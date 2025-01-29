@@ -111,7 +111,7 @@ try {
 }
 catch (error) {
 
-  err = "Unable to communitcate with Ollama due to the following error "+error.message;
+  err = "Unable to communitcate with AI due to the following error "+error.message;
   showNotiMsg("Communication Error", "Model Population Error", err);
 }
 }

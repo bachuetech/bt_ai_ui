@@ -15,7 +15,7 @@ use super::{web_chat::chat_handler, web_models::models_handler};
 
 //const APP_PATH: &str = "/app";
 
-pub struct AIServer {
+pub struct AIWebServer {
     app_configuration: AppConfig,
     state: Arc<AppState>,
 }
@@ -24,7 +24,7 @@ pub struct AppState {
     pub ai_client: AICLient,
 }
 
-impl AIServer {
+impl AIWebServer {
     pub fn new(config: AppConfig) -> Self {
         let app_config = config; 
         log_info!("new","Welcome to {} {}",app_config.get_app_name(),app_config.get_version());

@@ -3,7 +3,7 @@ use std::process;
 use bt_logger::{log_fatal, log_info, log_verbose};
 use tokio::signal;
 
-use crate::{app::web_app::AIServer, config::{app_config::AppConfig, serv_config::get_srv_config}};
+use crate::{app::web_app::AIWebServer, config::{app_config::AppConfig, serv_config::get_srv_config}};
 
 pub async fn ai_server_start() {
     let app_configuration = AppConfig::new();
@@ -21,7 +21,7 @@ pub async fn ai_server_start() {
 
     log_verbose!("main", "listening on {}", listener.local_addr().unwrap());
     
-    let svr = AIServer::new(app_configuration.clone());
+    let svr = AIWebServer::new(app_configuration.clone());
     if srv_config.is_secure() {
         log_info!("main","To start open https://localhost:{}{}/",srv_config.get_port(),&svr.get_app_url());
     }else{

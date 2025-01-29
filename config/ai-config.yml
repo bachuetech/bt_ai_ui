@@ -14,21 +14,30 @@ dev:
         generate: generate
         models: tags
       models:
-        - model: llama3.2
+        - model_id: llama3.2
+          model: llama3.2
           tool_support: true
           system: You are an AI assistant. You have tool-calling capabilities. Use a tool only if the questions match the tool function; otherwise, do not invoke any tool. When you receive a tool response, use the output to format an answer to the original user request. Always prioritize the tool's answer over yours only if any answer is received.
           tools:
             - do_basic_math
             - do_math_expressions
-        - model: llama3.1
+        - model_id: llama3.1
+          model: llama3.1
           tool_support: true
           system: You are an AI assitant. When you receive a tool response, use the output to format an answer to the original user request. Always prioritize the tool's answer over yours
           tools: ALL
-        - model: qwen2-math
+        - model_id: llama31
+          model: llama3.1
+          tool_support: true
+          system: You are an AI assitant. When you receive a tool response, use the output to format an answer to the original user request. Always prioritize the tool's answer over yours
+          tools:
+            - do_math_expressions          
+        - model_id: qwen2-math
+          model: qwen2-math
           tool_support: true
           system: You are an AI assitant.
           tools: NONE                                 
-        - model: default
+        - model_id: default
           tool_support: false
           system: You are an AI assitant
           tools: NONE
