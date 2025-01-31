@@ -9,7 +9,7 @@ use tower_http::services::ServeDir;
 
 use crate::{ai::ai_client::AICLient, config::app_config::AppConfig};
 
-use super::{web_chat::chat_handler, web_models::models_handler};
+use super::{app_state::AppState, web_chat::chat_handler, web_models::models_handler};
 
 
 
@@ -17,12 +17,10 @@ use super::{web_chat::chat_handler, web_models::models_handler};
 
 pub struct AIWebServer {
     app_configuration: AppConfig,
-    state: Arc<AppState>,
+    state: Arc<AppState>, //ToDo: Check if Arc is really necessary? 
 }
 
-pub struct AppState {
-    pub ai_client: AICLient,
-}
+
 
 impl AIWebServer {
     pub fn new(config: AppConfig) -> Self {

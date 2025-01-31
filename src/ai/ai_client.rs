@@ -1,6 +1,6 @@
 use bt_logger::log_verbose;
 
-use crate::{ai::{chat_model::model_chat, message::MessageRole}, config::{self, ai_config::{AIConfig, InteractionType}}, utils::{http_utils::{HttpClient, HttpResponse}, string_utils::{get_first_ocurrance, get_first_of_split}}};
+use crate::{ai::{chat_model::model_chat, message::MessageRole}, config::ai_config::{AIConfig, InteractionType}, utils::{http_utils::{HttpClient, HttpResponse}, string_utils::{get_first_ocurrance, get_first_of_split}}};
 
 use super::{ai_models::get_available_models_http, ai_tools::{AIToolManager, Tool}, message::Message};
 
@@ -33,7 +33,7 @@ impl AICLient {
        model_chat(&model, MessageRole::USER, chat_message, chat_context,
             self.get_system_msg(&platform, &model_id), self.get_tools(&platform, &model_id), current_date, current_time, 
             self.get_max_ctx_size(&platform), &self.http_client, 
-            self.get_url(&platform, config::ai_config::InteractionType::Chat)).await;
+            self.get_url(&platform, InteractionType::Chat)).await;
 
             HttpResponse{
                 header: http_resp.header,

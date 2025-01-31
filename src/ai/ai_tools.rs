@@ -4,7 +4,7 @@ use bt_logger::{log_debug, log_trace, log_verbose};
 use serde::{Deserialize, Serialize};
 use serde_json::{Result, Value};
 
-use crate::{config::ai_config::SupportedFunctions, utils::json_utils};
+use crate::{config::ai_config::SupportedFunctions, utils::file_utils};
 
 pub struct AIToolManager{
     tools: Option<Tools>,
@@ -51,7 +51,7 @@ const TOOLS_JSON_CONFIG_ENV_VAR_NAME: &str = "TOOLSCONFIGYMLFILE";
 
 impl AIToolManager {
     pub fn new() -> Self {
-        let tools_def = json_utils::get_json(TOOLS_JSON_CONFIG_ENV_VAR_NAME, TOOLS_JSON_DEF);
+        let tools_def = file_utils::get_file(TOOLS_JSON_CONFIG_ENV_VAR_NAME, TOOLS_JSON_DEF);
 
         match AIToolManager::load_tools_from_str(&tools_def) {
             Ok(t) => {

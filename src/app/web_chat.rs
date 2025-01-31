@@ -8,7 +8,9 @@ use axum::{
 use bt_logger::{log_trace, log_verbose};
 use serde::Deserialize;
 use crate::ai::message::Message;
-use super::web_app::AppState;
+
+use super::app_state::AppState;
+//use super::web_app::AppState;
 
 #[derive(Deserialize)]
 pub struct ChatClientRequest {
@@ -19,15 +21,12 @@ pub struct ChatClientRequest {
     context: Option<Vec<Message>>, //Is Optional!!
 }
 
-
 pub async fn chat_handler(State(ws_state): State<Arc<AppState>>, 
                             Json(payload): Json<ChatClientRequest>,) -> Response<Body> {
     log_trace!("chat_handler", "Prompt = {}", &payload.prompt);
 
     let context: Vec<Message>;
-    //if payload.context.len() > 0 {
     if let Some(ctx) = payload.context{
-        //context = serde_json::from_str(&payload.context).expect("JSON was not well-formatted");
         if ctx.len() > 0{
             context = ctx;
         }else{
