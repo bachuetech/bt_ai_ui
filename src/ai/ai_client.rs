@@ -1,6 +1,8 @@
+use bt_http_utils::{HttpClient, HttpResponse};
 use bt_logger::log_verbose;
+use bt_string_utils::{get_first_ocurrance, get_first_of_split};
 
-use crate::{ai::{chat_model::model_chat, message::MessageRole}, config::ai_config::{AIConfig, InteractionType}, utils::{http_utils::{HttpClient, HttpResponse}, string_utils::{get_first_ocurrance, get_first_of_split}}};
+use crate::{ai::{chat_model::model_chat, message::MessageRole}, config::ai_config::{AIConfig, InteractionType}};
 
 use super::{ai_models::get_available_models_http, ai_tools::{AIToolManager, Tool}, message::Message};
 
@@ -15,7 +17,7 @@ impl AICLient {
     pub fn new(run_environment: String) -> Self {
         Self {
             ai_config: AIConfig::new(run_environment),
-            http_client: HttpClient::new(),
+            http_client: HttpClient::new(false),
             tool_mgr: AIToolManager::new(),
         }
     }

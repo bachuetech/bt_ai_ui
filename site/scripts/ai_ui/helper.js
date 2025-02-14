@@ -42,8 +42,7 @@ function getChatName() {
         "Nov",
         "Dec"];
     const month = monthNames[date.getMonth()];
-    const
-        day = date.getDate().toString().padStart(2, '0'); // Pad day with leading zero if needed
+    const day = date.getDate().toString().padStart(2, '0'); // Pad day with leading zero if needed
 
     const now = new Date(); // Get the current date and time
 
@@ -149,7 +148,10 @@ document.getElementById('user-input').addEventListener('keydown', function (e) {
   
   window.onload = () => {
     updateChatList();
-    populateModels();
+    if (!use_default_ai_data_only){
+       populateModels(); //NO NEED WITH JEREMY!
+    }
+    setButtons();
     adjustPadding();
     autoFocusInput();
   

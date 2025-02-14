@@ -1,6 +1,5 @@
 use std::sync::Arc;
 
-
 use axum::{
     http::Uri, response::{Html, IntoResponse, Redirect}, routing::{get, post}, Router
 };
@@ -9,17 +8,12 @@ use tower_http::services::ServeDir;
 
 use crate::{ai::ai_client::AICLient, config::app_config::AppConfig};
 
-use super::{app_state::AppState, web_chat::chat_handler, web_models::models_handler};
-
-
-
-//const APP_PATH: &str = "/app";
+use super::{app_state::AppState, chat_api_handler::chat_handler, web_models::models_handler};
 
 pub struct AIWebServer {
     app_configuration: AppConfig,
     state: Arc<AppState>, //ToDo: Check if Arc is really necessary? 
 }
-
 
 
 impl AIWebServer {

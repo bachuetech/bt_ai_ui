@@ -74,15 +74,25 @@ if (isMicMuted){
 }
 }
 
+async function setButtons(){
+  document.getElementById('send-button').addEventListener('click', submitRequest);
+
+  if (s2t.isSpeechSupported()){
+    document.getElementById('mic-button').addEventListener('click', micRequest);
+  }else{
+    speechDisable();
+  }
+}
+
 // Fetch available models and populate the dropdown
 async function populateModels() {
-document.getElementById('send-button').addEventListener('click', submitRequest);
+/*document.getElementById('send-button').addEventListener('click', submitRequest);
 
 if (s2t.isSpeechSupported()){
   document.getElementById('mic-button').addEventListener('click', micRequest);
 }else{
   speechDisable();
-}
+}*/
 
 try {
   const data = await getAvailableModels();

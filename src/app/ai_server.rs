@@ -3,7 +3,7 @@ use std::process;
 use bt_logger::{log_fatal, log_info, log_verbose};
 use tokio::signal;
 
-use crate::{app::web_app::AIWebServer, config::{app_config::AppConfig, serv_config::get_srv_config}};
+use crate::{app::web_service::AIWebServer, config::{app_config::AppConfig, serv_config::get_srv_config}, process_exit_codes::LISTENER_TCP_BINDING_ERROR};
 
 pub async fn ai_server_start() {
     let app_configuration = AppConfig::new();
@@ -15,7 +15,7 @@ pub async fn ai_server_start() {
         Ok(result) => result,
         Err(e) => {
             log_fatal!("main", "Fatal Error binding TCP {}. Error: {}", srv_config.get_tcp_listener(), e);
-            process::exit(-100); // Exit the program with code -100
+            process::exit(LISTENER_TCP_BINDING_ERROR); // Exit the program with code -100
         }
     };
 

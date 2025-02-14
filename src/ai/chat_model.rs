@@ -1,10 +1,8 @@
+use bt_http_utils::{ContentType, HttpClient, HttpResponse};
 use bt_logger::{log_debug, log_error, log_trace, log_verbose, log_warning};
 use serde::{Deserialize, Serialize};
 
-use crate::{
-    ai::{message, tools_proxy::tool_proxy},
-    utils::http_utils::{ContentType, HttpClient, HttpResponse},
-};
+use crate::ai::{message, tools_proxy::tool_proxy};
 
 use super::{
     ai_tools::Tool,
@@ -71,9 +69,20 @@ pub async fn model_chat( ai_model: &String, role: MessageRole, message: &String,
     let json_string = serde_json::to_string(&ai_request).unwrap();
     log_verbose!("model_chat", "Request: {}", &json_string);
 
-    let resp = http_client
+    let resp: HttpResponse; 
+    match http_client
         .post(&chat_url, &json_string, ContentType::JSON)
-        .await;
+        .await{
+            Ok(r) => resp = r,
+            Err(e) => {log_error!( "model_chat", "HTTP Error when reaching url {} for Prompt {}. ERROR: {}", &chat_url, &message, e.to_string() );
+                                return HttpResponse {
+                                        status_code: 500,
+                                        header: http_client.get_default_headers(),
+                                        body: format!("HTTP Error when reaching url {} for Prompt {}. ERROR: {}", &chat_url, &message, e.to_string() ),
+                                }
+                            },
+        }
+
 
     if resp.is_error() {
         log_error!( "model_chat", "HTTP Error {} when reaching url {} for Prompt {}", resp.status_code, &chat_url, &message );

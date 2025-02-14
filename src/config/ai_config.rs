@@ -1,10 +1,10 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, process};
 
-use bt_logger::log_warning;
+use bt_logger::{log_fatal, log_warning};
+use bt_yaml_utils::{convert_yaml_to_vec_string, get_yaml};
 use yaml_rust2::Yaml;
 
-use crate::utils::yaml_utils;
-use crate::config::labels;
+use crate::{config::labels, process_exit_codes::AI_CONFIG_READING_ERROR};
 
 const AI_YML_CONFIG: &str = "config/ai-config.yml";
 const AI_YML_CONFIG_ENV_VAR_NAME: &str = "AICONFIGYMLFILE";
@@ -24,7 +24,7 @@ struct _AIApis {
     ctx_max: usize,
     path: String,
     chat: String,
-    generate: String,
+    //generate: String,
     models: String,
 }
 
@@ -79,7 +79,7 @@ impl From<Yaml> for SupportedFunctions {
         match s.as_str() {
             Some("ALL") => SupportedFunctions::ALL,
             Some("NONE") => SupportedFunctions::NONE,
-            _ => SupportedFunctions::Functions(yaml_utils::convert_yaml_to_vec_string(&s)), // Otherwise, treat it as a list of names
+            _ => SupportedFunctions::Functions(convert_yaml_to_vec_string(&s)), // Otherwise, treat it as a list of names
         }
     }
 }
@@ -93,17 +93,18 @@ pub struct Model{
 }
 pub enum InteractionType {
     Chat,
-    Generate,
+    //Generate,
     Models,
 }
 
 impl AIConfig {
     // Constructor to read from YAML file
     pub fn new(run_env: String) -> Self {
-        let ai_config = yaml_utils::get_yaml(
-            AI_YML_CONFIG_ENV_VAR_NAME,
-            AI_YML_CONFIG,
-        );
+        let ai_config: Yaml;
+        match get_yaml(AI_YML_CONFIG_ENV_VAR_NAME,AI_YML_CONFIG){
+            Ok(y_file_conf) => ai_config = y_file_conf,
+            Err(e) => {log_fatal!("new","Fatal Error Reading AI configuration. Application aborted! {}",e.to_string()); process::exit(AI_CONFIG_READING_ERROR);}, // Exit the program with code -102 },,
+        }
 
         let mut platform_list: HashMap<String, Platform> = HashMap::new();
         for plat in ai_config[run_env.as_str()][labels::AI_PLATFORM_LABEL].clone() {
@@ -130,7 +131,7 @@ impl AIConfig {
                     .expect("Maximun Size of Context (ctx_max) in AI YML config file is invalid"),
                 path: plat["api"]["path"].as_str().unwrap_or("api").to_owned(),
                 chat: plat["api"]["chat"].as_str().unwrap_or("chat").to_owned(),
-                generate: plat["api"]["generate"].as_str().unwrap_or("generate").to_owned(),
+                //generate: plat["api"]["generate"].as_str().unwrap_or("generate").to_owned(),
                 models: plat["api"]["models"].as_str().unwrap_or("models").to_owned(),
             };
 
@@ -191,9 +192,9 @@ impl AIConfig {
                 InteractionType::Chat => {
                     format!("{}{}", p.ai_url, p.api.chat.clone())
                 }
-                InteractionType::Generate => {
-                    format!("{}{}", p.ai_url.clone(), p.api.generate.clone())
-                }
+                //InteractionType::Generate => {
+                //    format!("{}{}", p.ai_url.clone(), p.api.generate.clone())
+                //}
                 InteractionType::Models => {
                     format!("{}{}", p.ai_url.clone(), p.api.models.clone())
                 }
@@ -202,7 +203,7 @@ impl AIConfig {
             log_warning!("get_url","Platform NOT found. Using default values!");
             return match int_type { //Default Values!
                 InteractionType::Chat => "http://localhost/chat".to_owned(),
-                InteractionType::Generate => "http://localhost/generate".to_owned(),
+                //InteractionType::Generate => "http://localhost/generate".to_owned(),
                 InteractionType::Models => "http://localhost/models".to_owned(),
             };
         }

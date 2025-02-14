@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BT AI UI Chat</title>
+    <title>BACHUETECH AI Chat</title>
+    <script src="scripts/config.js"></script>
+
     <link rel="shortcut icon" type="image/x-icon" href="favicon.png">
 
     <script src="scripts/speech/txt2speech.js"></script>
@@ -38,11 +40,13 @@
           <!-- Sidebar -->
           <nav class="col-md-3 col-lg-2 sidebar">
             <h2 id="app_name">Chat</h2>
-            <ul class="nav flex-column">
+            <ul id="sidebar-nav-list" class="nav flex-column">
+              <!-- DOES NOT Apply for Jeremy -- TODO: Make it Configurable!! ----------------------
               <li class="nav-item">
                 <label for="model-select" class="me-2" style="font-size: normal;">Model:</label>
                 <select class="form-select me-5" id="model-select" style="width: 95%;"></select>
-              </li>
+              </li
+              -------------------------------------------------------------------------------    -->
               <li class="nav-item">
                 <label for="chat-select" class="me-2" style="font-size: normal;">History:</label>
                 <select id="chat-select" class="form-select me-2" style="width: 95%;">
@@ -57,6 +61,22 @@
             </ul>
           </nav>
     
+          <!-- MODEL LIST CONFIGURED!-->
+          <script>
+            if (!use_default_ai_data_only) {
+              var navItem = document.createElement('li');
+              navItem.classList.add('nav-item');
+              navItem.innerHTML = `
+                <label for="model-select" class="me-2" style="font-size: normal;">Model:</label>
+                <select class="form-select me-5" id="model-select" style="width: 95%;"></select>
+              `;
+              // Get the <ul> element
+              var navList = document.getElementById('sidebar-nav-list');
+              // Insert the new <li> as the first child of the <ul>
+              navList.insertBefore(navItem, navList.firstChild);
+            }
+          </script>
+
         <!-- Content Area -->
         <main class="col-md-9 col-lg-10 content">
             <div style="top: 0px; background: linear-gradient(180deg, black, transparent);">
@@ -109,7 +129,7 @@
     </div>
   </div>
 
-  <script src="scripts/config.js"></script>
+
   <script src="scripts/utils.js"></script>
   <script src="scripts/ai_ui/api.js"></script>
   <script src="scripts/ai_ui/helper.js"></script>

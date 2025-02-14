@@ -10,7 +10,6 @@ use serde::Deserialize;
 use crate::ai::message::Message;
 
 use super::app_state::AppState;
-//use super::web_app::AppState;
 
 #[derive(Deserialize)]
 pub struct ChatClientRequest {

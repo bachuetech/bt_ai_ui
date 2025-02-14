@@ -1,6 +1,10 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, process};
 
-use crate::utils::yaml_utils;
+use bt_logger::log_fatal;
+use bt_yaml_utils::get_yaml;
+use yaml_rust2::Yaml;
+
+use crate::process_exit_codes::APP_CONFIG_READING_ERROR;
 
 const APP_YML_CONFIG: &str = "config/app-config.yml";
 const APP_YML_CONFIG_ENV_VAR_NAME: &str = "APPCONFIGYMLFILE";
@@ -24,7 +28,12 @@ pub struct AppConfig {
 impl AppConfig {
     // Constructor to read from YAML file
     pub fn new() -> Self {
-        let app_config = yaml_utils::get_yaml(APP_YML_CONFIG_ENV_VAR_NAME, APP_YML_CONFIG);
+        let app_config: Yaml;
+        
+        match  get_yaml(APP_YML_CONFIG_ENV_VAR_NAME, APP_YML_CONFIG) {
+            Ok(y_file_conf) => app_config = y_file_conf,
+            Err(e) => {log_fatal!("new","Fatal Error Reading APP configuration. Application aborted! {}",e.to_string()); process::exit(APP_CONFIG_READING_ERROR);}, // Exit the program with code -101 },
+        }
 
         let app_environment = app_config["environment"].as_str().unwrap_or("DEV");
 
