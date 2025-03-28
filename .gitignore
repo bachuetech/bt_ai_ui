@@ -1,5 +1,3 @@
 /target
 Cargo.lock
 *.lock
-Cargo.lock
-*.lock

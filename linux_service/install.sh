@@ -54,8 +54,10 @@ fi
 #Moving Config and Site folder
 echo "Moving site to $DESTINATION_FOLDER"
 sudo cp -fr site "$DESTINATION_FOLDER"
-echo "Moving site to $DESTINATION_FOLDER"
+echo "Moving config to $DESTINATION_FOLDER"
 sudo cp -fr config "$DESTINATION_FOLDER"
+echo "Moving defs to $DESTINATION_FOLDER"
+sudo cp -fr defs "$DESTINATION_FOLDER"
 
 sudo chown -R "root:$GROUP_NAME" "$DESTINATION_FOLDER"
 sudo chmod -R 770 "$DESTINATION_FOLDER"

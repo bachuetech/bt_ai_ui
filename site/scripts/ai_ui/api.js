@@ -106,13 +106,15 @@ async function submitRequest() {
           ],
           throwOnError: false
         });
-        //responseDiv.innerHTML = DOMPurify.sanitize(prettifyCode(cleanHTMLEntities(markdownToHTMLCleansing(marked.parse(responseDiv.innerHTML)))));
-        responseDiv.innerHTML = prettifyCode(marked.parse(responseDiv.innerHTML));
+        ///responseDiv.innerHTML = cleanHTMLEntities(responseDiv.innerHTML);
+        responseDiv.innerHTML = prettifyCode(cleanHTMLEntities(marked.parse(responseDiv.innerHTML)));
       }
     })
     .then(() => {
       stopButton.remove();
       PR.prettyPrint();
+      //Fixing unaddressed issue:
+      responseDiv.innerHTML = DamageControlToHTMLCleansing(responseDiv.innerHTML);
       responseDiv.innerHTML = DOMPurify.sanitize("<strong>" + selectedModel + ":</strong><br/>" + responseDiv.innerHTML);
 
       // Copy button

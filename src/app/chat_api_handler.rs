@@ -5,9 +5,10 @@ use axum::{
     extract::State,
     response::{Json, Response},
 };
+use bt_ai_core::message::Message;
 use bt_logger::{log_trace, log_verbose};
 use serde::Deserialize;
-use crate::ai::message::Message;
+//use crate::ai::message::Message;
 
 use super::app_state::AppState;
 

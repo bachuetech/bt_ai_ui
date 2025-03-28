@@ -1,10 +1,9 @@
 use std::collections::HashMap;
 
+use bt_ai_core::ai_config::{AIConfig, InteractionType};
 use bt_http_utils::{HttpClient, HttpResponse};
 use bt_logger::log_error;
 use serde::{Deserialize, Serialize};
-
-use crate::config::ai_config::{AIConfig, InteractionType};
 
 #[derive(Deserialize, Serialize)]
 struct ModelList {
@@ -47,13 +46,13 @@ pub async fn get_available_models_http(
             .get(
                 ai_config
                     .get_url(plfm.to_string(), InteractionType::Models)
-                    .as_str(),
+                    .as_str(), None
             )
             .await
         {
             Ok(r) => resp = r,
-            Err(e) => {log_error!( "get_available_models_http", "HTTP Error retriving models. ERROR: {}", e.to_string());
-                        return     HttpResponse {
+            Err(e) => {log_error!( "get_available_models_http", "Error retrieving models from Platform {}. ERROR: {}", &plfm, e.to_string());
+                        resp =    HttpResponse {
                             status_code: 500, 
                             header: http_client.get_default_headers(),
                             body: "".to_owned(),

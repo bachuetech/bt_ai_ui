@@ -54,17 +54,20 @@ function formatNumbers(text) {
     });
   }
 
-  function markdownToHTMLCleansing(text) {
+  function DamageControlToHTMLCleansing(text) {
     // Convert \frac{numerator}{denominator} to <math><mfrac><mn>numerator</mn><mn>denominator</mn></mfrac></math>
     text = text.replace(/\\frac{([^}]+)}{([^}]+)}/g, '<math><mfrac><mn>$1</mn><mn>$2</mn></mfrac></math>');
-  
+
+	  // Convert \boxed{expression} to <span style="border: 1px solid black;">expression</span>
+    text = text.replace(/\$\\boxed{([^}]+)}\$/g, '<span style="border: 1px solid black;">$1</span>');    
+
     // Convert \boxed{expression} to <span style="border: 1px solid black;">expression</span>
     text = text.replace(/\\boxed{([^}]+)}/g, '<span style="border: 1px solid black;">$1</span>');
   
-   // Convert \[a-zA-Z]+ to <span style="font-style: italic;">expression</span>  /\\([^\\s\n]+)/g
-   text.replace(/\\text\{([^}]+)}/g, '<span style="font-style: italic;">$1</span>');
+    // Convert \[a-zA-Z]+ to <span style="font-style: italic;">expression</span>  /\\([^\\s\n]+)/g
+    text.replace(/\\text\{([^}]+)}/g, '<span style="font-style: italic;">$1</span>');
 
-   return text;
+    return text;
   }
 
   function getCurrentDate() {

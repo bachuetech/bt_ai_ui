@@ -1,48 +1,41 @@
 use std::sync::Arc;
 
-use axum::{
-    http::Uri, response::{Html, IntoResponse, Redirect}, routing::{get, post}, Router
-};
-use bt_logger::{log_debug, log_info, log_trace, log_verbose};
+use axum::{routing::{get, post}, Router};
+use bt_core_config::app_config::AppConfig;
+use bt_logger::{log_trace, log_verbose};
 use tower_http::services::ServeDir;
-
-use crate::{ai::ai_client::AICLient, config::app_config::AppConfig};
+use bt_http_server::{default_handler, fallback_root, server_start};
+use crate::ai::ai_client::AICLient;
 
 use super::{app_state::AppState, chat_api_handler::chat_handler, web_models::models_handler};
 
 pub struct AIWebServer {
     app_configuration: AppConfig,
-    state: Arc<AppState>, //ToDo: Check if Arc is really necessary? 
+    state: Arc<AppState>,
 }
 
 
 impl AIWebServer {
-    pub fn new(config: AppConfig) -> Self {
-        let app_config = config; 
-        log_info!("new","Welcome to {} {}",app_config.get_app_name(),app_config.get_version());
-
-        let aic = AICLient::new(app_config.get_environment());
+    pub fn new(config: &AppConfig) -> Self {
+        let aic = AICLient::new(config.get_environment());
         let shared_state = Arc::new(AppState { ai_client: aic });
+        log_verbose!("new","AI Client and Shared State are ready");
 
         Self {
-            app_configuration: app_config,
+            app_configuration: config.clone(),
             state: shared_state,
         }
-    }
-
-    pub fn get_app_url(&self) -> String{
-        self.app_configuration.get_app_path()
     }
 
     pub fn get_routes(&self) -> Router{
         log_verbose!("get_routes","API Route {}. APP Route {}",&self.app_configuration.get_api_path(),&self.app_configuration.get_app_path());
        Router::new()
-        .route("/", get(handler)) //This is the default path and eventually fallback
+        .route("/", get(default_handler)) //This is the default path and eventually fallback
         .nest(&self.app_configuration.get_api_path(), self.get_api_routes())
         //.nest_service(&self.app_configuration.get_app_path(), self.get_app_web_route())
         .nest_service(&self.app_configuration.get_app_path(), ServeDir::new(&self.app_configuration.get_file_app_dir()))
         //.route("/health", get(health_check_handler)); // Non-prefixed route
-        .fallback(fallback)    // Catch-all for 404 errors
+        .fallback(fallback_root)    // Catch-all for 404 errors
     }
 
     fn get_api_routes(&self) -> Router {
@@ -61,17 +54,8 @@ impl AIWebServer {
     }
 }
 
-fn generate_html() -> String {
-    format!("<h1>Bachutech AI</h1><br/><h2>Open http://localhost:3001/ai/app/</h2>" )
-}
-
-async fn handler() -> impl IntoResponse { //Redirect {
-    log_trace!("handler","Default root.");
-    let html_txt = generate_html(); 
-    Html(html_txt)
-}
-
-async fn fallback(uri: Uri) -> impl IntoResponse {
-    log_debug!("fallback", "Redirecting to default page. Page not found: {}", uri);
-    Redirect::temporary("/")
+pub async fn app_server_start(running_env: Option<String>) {
+    let app_configuration = AppConfig::new(running_env);
+    let web_svr = AIWebServer::new(&app_configuration);
+    server_start(&app_configuration, web_svr.get_routes()).await;
 }

@@ -1,77 +1,18 @@
+use bt_ai_core::{ai_chat_helper::{get_chat_ai_chat_request, get_chat_request_json, AIChatBodyMessage, AIChatResponse}, ai_tools::Tool, message::{Message, MessageRole}};
 use bt_http_utils::{ContentType, HttpClient, HttpResponse};
-use bt_logger::{log_debug, log_error, log_trace, log_verbose, log_warning};
-use serde::{Deserialize, Serialize};
+use bt_logger::{log_error, log_verbose, log_warning};
 
-use crate::ai::{message, tools_proxy::tool_proxy};
-
-use super::{
-    ai_tools::Tool,
-    message::{Message, MessageRole},
-};
-
-#[derive(Serialize)]
-struct AIChatRequest {
-    model: String,
-    messages: Vec<Message>,
-    stream: bool,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    tools: Option<Vec<Tool>>,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-struct AIChatResponse {
-    model: String,
-    created_at: String,
-    message: Message,
-    done_reason: String,
-    done: bool,
-    total_duration: u128,
-    load_duration: u128,
-    prompt_eval_count: u64,
-    prompt_eval_duration: u128,
-    eval_count: u64,
-    eval_duration: u128,
-}
-
-#[derive(Serialize, Deserialize)]
-struct AIChatBodyMessage {
-    message: Message,
-    context: Vec<Message>,
-    done: bool,
-}
+use crate::ai::tools_proxy::tool_proxy;
 
 pub async fn model_chat( ai_model: &String, role: MessageRole, message: &String, context: Vec<Message>, system: Option<String>, tool_list: Option<Vec<Tool>>, 
                         current_date: &str, current_time: &str, context_size: usize, http_client: &HttpClient, chat_url: String ) -> HttpResponse {
-    log_trace!( "model_chat", "Ready to start chat role {:?}: {}", &role, &message );
-
-    let mut initial_msg: Vec<Message> = Vec::new();
-    if let Some(sys_msg) = system {
-        initial_msg.push(Message::new(
-            MessageRole::SYSTEM,
-            format!(
-                "{}. The current date is {} and the current time is {}",
-                sys_msg, &current_date, &current_time
-            ),
-        ));
-    }
-    initial_msg.extend(context.clone()); //payload.context.clone());
-    let user_message = Message::new(role, message.to_string());
-    initial_msg.push(user_message.clone()); //Needed Later to build the context (history)
-                                            // Convert the struct to a JSON string
-
-    let ai_request = AIChatRequest {
-        model: ai_model.to_owned(),
-        messages: initial_msg.clone(),
-        stream: false,
-        tools: tool_list.clone(),
-    };
-
-    let json_string = serde_json::to_string(&ai_request).unwrap();
+    let ai_request = get_chat_ai_chat_request(ai_model, role.clone(), message, context.clone(), system, tool_list.clone(), current_date, current_time);
+    let json_string = get_chat_request_json(&ai_request); //serde_json::to_string(&ai_request).unwrap();
     log_verbose!("model_chat", "Request: {}", &json_string);
 
     let resp: HttpResponse; 
     match http_client
-        .post(&chat_url, &json_string, ContentType::JSON)
+        .post(&chat_url, None,&json_string, ContentType::JSON)
         .await{
             Ok(r) => resp = r,
             Err(e) => {log_error!( "model_chat", "HTTP Error when reaching url {} for Prompt {}. ERROR: {}", &chat_url, &message, e.to_string() );
@@ -93,12 +34,14 @@ pub async fn model_chat( ai_model: &String, role: MessageRole, message: &String,
         };
     }
 
-    log_debug!("model_chat","Raw answer {:?}", resp);
+    //log_debug!("model_chat","Raw answer {:?}", resp);
     let res: AIChatResponse = serde_json::from_str(&resp.body).unwrap();
     log_verbose!("model_chat", "AI Answer Struct (Open HTTP Response to check for tool requests): {:?}", &res );
 
+    let mut initial_msg = ai_request.messages.clone(); //Added 03/27/25
+
     let mut tool_response: Option<HttpResponse> = None;
-    if res.message.get_role().clone() == message::MessageRole::ASSISTANT
+    if res.message.get_role().clone() == MessageRole::ASSISTANT
         && res.message.get_content() == ""
     {
         log_verbose!("model_chat", "Ready to call tools?");
@@ -148,12 +91,13 @@ pub async fn model_chat( ai_model: &String, role: MessageRole, message: &String,
         new_ctx.drain(0..n);
     }
 
+    let user_message = Message::new(role, message.to_string()); //Added 03/27/25
     new_ctx.push(user_message);
     new_ctx.push(res.message.clone());
 
     let answer_body: AIChatBodyMessage;
     if let Some(value) = &tool_response {
-        log_debug!("model_chat","Building Response with Tool Response {:?}", &value);
+        log_verbose!("model_chat","Building Response with Tool Response {:?}", &value);
         let tool_res: AIChatBodyMessage = serde_json::from_str(&value.body).unwrap();
         new_ctx.push(tool_res.message.clone());
         answer_body = AIChatBodyMessage {
@@ -162,7 +106,7 @@ pub async fn model_chat( ai_model: &String, role: MessageRole, message: &String,
             done: tool_res.done,
         };
     } else {
-        log_debug!("model_chat", "Building Response with When NO Tool Response");
+        log_verbose!("model_chat", "Building Response When NO Tool Response");
         answer_body = AIChatBodyMessage {
             message: res.message,
             context: new_ctx,

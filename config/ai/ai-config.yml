@@ -1,0 +1,64 @@
+# ai_config.yml
+name: BachutechAI
+dev:
+  platform:
+    - name: OLLAMA
+      server:
+        host: 192.168.117.161
+        port: 11434
+        secure: false
+      api:
+        ctx_max: 20
+        path: api
+        chat: chat
+        generate: generate
+        models: tags
+      models:
+        - model_id: llama3.2
+          model: llama3.2
+          tool_support: true
+          system: "You are an AI assistant. Use the following rules to answer the question when tools are available: 1. Use a tool only if the questions match the tool function; otherwise, do not invoke or try to invoke any tool, 2. always prioritize the tool answer and always use the exact content (answer) from the tool, DO NOT change the tool content (answer), 3. NEVER mention that you may call a tool, that you did not call a tool, or that you did not find a tool to answer the question"
+          #system: "You are an AI assistant who assesses answers. Always answer only with a YAML format score: integer, explanation: text. Always include the two fields, score and explanation. The explanation text is inside quotes. Use only the material provided in the prompt to assess the answer. The score and explanation are based only on the provided content." 
+          tools: NONE
+        - model_id: llama3.1
+          model: llama3.1
+          tool_support: true
+          system: You are an AI assitant. When you receive a tool response, use the output to format an answer to the original user request. Always prioritize the tool's answer over yours
+          tools: ALL
+        - model_id: factual
+          model: factual:latest
+          tool_support: false
+          system: "Your objective is to evaluate the accuracy of an ANSWER. You will receive a QUESTION, the CONTENT with the text to support the answer, and the ANSWER. Your task is to provide a YAML format SCORE: integer (0-4) \n EXPLANATION: text \n BENCHMARK: text, where SCORE is the accuracy of the answer between 0 to 4, where 4 is an answer accurate and complete, meaning include 100% of the elements required vs the content, 3 is an answer missing some elements, include around 75% or more of the elements required, vs the content, 2 is missing around half (25% to 74%) of the key elements of the answer vs the content, 1 is an answer including just a few aspects, less than 25% of the required elements vs the content, and 0 if the answer is not related to the questions or the content. EXPLAIN is used for you to explain why you gave the score to the answer, including the missing elements in the answer that can be found in the content. BENCHMARK is your answer that is accurate and 100% complete. Answer with the following YAML format only; do not include anything else: SCORE: Integer between 0 to 4 \nEXPLANATION: 'Text with the rationale for the score and the missing elements'\nBENCHMARK: 'Text with the 100% complete and accurate answer that give you a score of 4'. For example: SCORE: 3\nEXPLANATION: \"The answer includes key elements and explains the basic functionality. Elements missing are the need for additional memory, and explaining why sometime answer are deviated from the request\nPERFECT: \"Additional memory helps to minimize errors because the model can perform additional calculations and pick the best one instead of using a limited number\" End of example"
+          tools: None          
+        - model_id: llama31
+          model: llama3.1
+          tool_support: true
+          system: You are an AI assitant. When you receive a tool response, use the output to format an answer to the original user request. Always prioritize the tool's answer over yours
+          tools:
+            - do_math_expressions          
+        - model_id: qwen2-math
+          model: qwen2-math
+          tool_support: true
+          system: You are an AI assitant.
+          tools: NONE                                 
+        - model_id: default
+          tool_support: false
+          system: You are an AI assitant
+          tools: NONE
+    - name: OLLAMALOCAL
+      server:
+        host: localhost
+        port: 11434
+        secure: false
+      api:
+        ctx_max: 20
+        path: api
+        chat: chat
+        generate: generate
+        models: tags
+      models:
+        - model_id: llama3.3
+          model: llama3.3:70b-instruct-q2_K
+          tool_support: true
+          system: "You are an AI assistant. Use the following rules to answer the question when tools are available: 1. Use a tool only if the questions match the tool function; otherwise, do not invoke or try to invoke any tool, 2. always prioritize the tool answer and always use the exact content (answer) from the tool, DO NOT change the tool content (answer), 3. NEVER mention that you may call a tool, that you did not call a tool, or that you did not find a tool to answer the question"
+          tools: NONE       
