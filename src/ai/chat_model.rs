@@ -41,9 +41,7 @@ pub async fn model_chat( ai_model: &String, role: MessageRole, message: &String,
     let mut initial_msg = ai_request.messages.clone(); //Added 03/27/25
 
     let mut tool_response: Option<HttpResponse> = None;
-    if res.message.get_role().clone() == MessageRole::ASSISTANT
-        && res.message.get_content() == ""
-    {
+    if res.message.get_role().clone() == MessageRole::ASSISTANT && res.message.get_content() == "" {
         log_verbose!("model_chat", "Ready to call tools?");
         if let Some(tools) = res.message.get_tools() {
             log_verbose!("model_chat", "Ready to call tools! List of Tools available");

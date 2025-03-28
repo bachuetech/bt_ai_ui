@@ -13,7 +13,7 @@ license = "GPL-3.0-only"
 
 
 [dependencies]
-axum = "0.8.1"
+axum = "0.8.3"
 bt_ai_core = { git = "https://github.com/bachuetech/bt_ai_core.git", version = "0.1.8" }
 bt_core_config = { git = "https://github.com/bachuetech/bt_core_config.git", version = "0.1.2" }
 bt_http_cli_conf = "0.1.1"
